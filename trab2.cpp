@@ -9,11 +9,12 @@ void AplicacaoReceptora(string mensagem);
 void CamadaDeAplicacaoTransmissora(string mensagem);
 void AplicacaoTransmissora(void);
 void MeioDeComunicacao(int fluxoBrutoDeBits []);
-void CamadaEnlaceDadosTransmissoraControleDeErro (int quadro []);
+void CamadaEnlaceDadosTransmissoraControleDeErro (vector <int> &quadro);
 void CamadaEnlaceDadosTransmissora( vector<int> &quadro);
-void CamadaEnlaceDadosTransmissoraControleDeErroBitParidadePar(int quadro []);
-void CamadaEnlaceDadosTransmissoraControledeErroBitParidadeImpar(int quadro []);
+void CamadaEnlaceDadosTransmissoraControleDeErroBitParidadePar(vector <int> &quadro);
+void CamadaEnlaceDadosTransmissoraControledeErroBitParidadeImpar(vector <int> &quadro);
 void CamadaEnlaceDadosTransmissoraControleDeErroCRC(int quadro []);
+void CamadaEnlaceDadosReceptora(int fluxoBrutoDeBits []);
 
 int main(void) {
     AplicacaoTransmissora();
@@ -34,8 +35,9 @@ void string_to_bin(string mensagem, vector <int> &quadro){
     string binaryString = "";
     for(int i=0;i<mensagem.size();i++)
         binaryString += (bitset<8>(mensagem[i]).to_string());
+    cout << "inicial:\n" << binaryString;
     for(int i=0;i<binaryString.size();i++)
-        quadro.push_back((int)binaryString[i]);
+        quadro.push_back(binaryString[i] - '0');
 }
 
 void CamadaDeAplicacaoTransmissora(string mensagem) {
@@ -47,6 +49,60 @@ void CamadaDeAplicacaoTransmissora(string mensagem) {
     //AplicacaoReceptora(mensagem);
 }// fim do método CamadaDeAplicacaoReceptora
 
+
+char ByteToChar(string str) {
+    char parsed = 0;
+    for (int i = 0; i < 8; i++) {
+        if (str[i] == '1') {
+            parsed |= 1 << (7 - i);
+        }
+    }
+    return parsed;
+}
+
+void convertBinToString(vector<int> &quadro,string &mensagem){
+    string binaryString = "";
+
+    for (int i = 0; i < quadro.size(); i++)
+        binaryString += quadro[i] + '0';
+
+    for(int i = 0; i < binaryString.size(); i += 8) {
+        mensagem += ByteToChar(binaryString.substr(i, i + 8));
+    }
+
+    cout << "\n\nmensagem convertBin: ";
+    for (auto i = quadro.begin(); i != quadro.end(); ++i)
+                cout << *i << " ";
+    cout << "\n";
+}
+
+void desencapsulamentoParidade(vector<int> &quadro,string &mensagem){
+    quadro.pop_back();
+    convertBinToString(quadro,mensagem);
+}
+
+void CamadaEnlaceDadosReceptora(vector <int> &fluxoBrutoDeBits) {
+    int tipoDeControle = 0;
+    string mensagem = "";
+    CamadaEnlaceDadosTransmissoraControleDeErro(fluxoBrutoDeBits);
+    switch (tipoDeControle) {
+        case 0: //bit de paridade par
+            desencapsulamentoParidade(fluxoBrutoDeBits,mensagem);
+        break;
+        case 1: //bit de paridade impar
+            desencapsulamentoParidade(fluxoBrutoDeBits,mensagem);
+        break;
+        case 2: //CRC
+        //codigo
+        //codigo
+        break;
+    }
+
+    AplicacaoReceptora(mensagem);
+   
+   
+}
+
 void AplicacaoReceptora(string mensagem) {
     //Simula o comportamento do computador B, que recebe a mensagem
     cout << "A mensagem recebida foi:" << mensagem << endl;
@@ -54,23 +110,38 @@ void AplicacaoReceptora(string mensagem) {
 
 
 // Implementação meio de comunicação
-/*void MeioDeComunicacao(int fluxoBrutoDeBits []) {
+void MeioDeComunicacao(vector <int> &fluxoBrutoDeBits) {
     //OBS: trabalhar com BITS e nao com BYTES!!!
-    int erro, porcentagemDeErros;
-    int fluxoBrutoDeBitsPontoA [], fluxoBrutoDeBitsPontoB [];
+    int erro;
+    float porcentagemDeErros;
+    int BitsSize = fluxoBrutoDeBits.size();
+    int fluxoBrutoDeBitsPontoA [BitsSize];
+    vector<int> fluxoBrutoDeBitsPontoB;
+    int progresso = 0;
 
-    porcentagemDeErros = 0; // 10% 20%, 30%, 40%, ... 100%
-    fluxoBrutoDeBitsPontoA = fluxoBrutoDeBits;
+    porcentagemDeErros = 30; // 10% 20%, 30%, 40%, ... 100%
+    int bitsErrados = int(porcentagemDeErros * BitsSize);
+    cout << "\n\nBites:" << bitsErrados <<"\n\n";
 
-    while(fluxoBrutoDeBitsPontoB.lenght != fluxoBrutoDeBitsPontoA) { // fazer a probabilidade do erro
-        if((rand() % 100) == "..."
-            fluxoBrutoDeBitsPontoB += fluxoBrutoDeBitsPontoA; // BITS!!!
-        else // ERRO! INVERTER (usa condição ternária)
-            fluxoBrutoDeBitsPontoB == 0) ?
-            fluxoBrutoDeBitsPontoA = fluxoBrutoDeBitsPontoB++ :
-            fluxoBrutoDeBitsPontoA = fluxoBrutoDeBitsPontoB--;
+    // Camada fisica
+    //passando do tipo vector para array
+    for(int i=0; i<fluxoBrutoDeBits.size(); i++) {
+        fluxoBrutoDeBitsPontoA[i] = fluxoBrutoDeBits[i];  
     }
-}*/
+
+    
+    while(progresso < BitsSize){
+        int bit = fluxoBrutoDeBitsPontoA[progresso++];
+        if(rand()%100 < porcentagemDeErros){
+            cout << "entrei";
+            bit = (bit + 1) % 2;
+        }
+        fluxoBrutoDeBitsPontoB.push_back(bit);
+    }
+
+   
+    CamadaEnlaceDadosReceptora(fluxoBrutoDeBitsPontoB);
+}
 
 void encapsulamento_paridade(vector <int> &quadro,int paridade){
     int qtdd1 = 0;
@@ -84,11 +155,12 @@ void encapsulamento_paridade(vector <int> &quadro,int paridade){
         quadro.push_back(0);
     else 
         quadro.push_back(1);
+
+    cout << "\n\nmensagem depois: ";
+    for (auto i = quadro.begin(); i != quadro.end(); ++i)
+                cout << *i << " ";
 }
 
-void convertBinToString(vector<int> &quadro,string &mensagem){
-    mensagem = "ba";  
-}
 
 void CamadaEnlaceDadosTransmissora( vector<int> &quadro) {
     int tipoDeControle = 0;
@@ -105,20 +177,22 @@ void CamadaEnlaceDadosTransmissora( vector<int> &quadro) {
         break;
     }
     //CamadaEnlaceDadosTransmissoraControleDeErro(quadro);
-    string mensagem = "";
-    convertBinToString(quadro,mensagem);
-    AplicacaoReceptora(mensagem);
+    
+    MeioDeComunicacao(quadro);
+    //convertBinToString(quadro,mensagem);
+    //AplicacaoReceptora(mensagem);
     //chama proxima camada
+    //CamadaEnlaceDadosReceptora(quadro);
 } // fim do metodo CamadaEnlaceDadosTransmissora
 
-void CamadaEnlaceDadosTransmissoraControleDeErro (int quadro []) {
+void CamadaEnlaceDadosTransmissoraControleDeErro (vector <int> &quadro) {
     int tipoDeControleDeErro = 0; // alterar de acordo com o teste
     switch (tipoDeControleDeErro) {
         case 0: //bit de paridade par
-        // codigo
+            CamadaEnlaceDadosTransmissoraControleDeErroBitParidadePar(quadro);
         break;
         case 1: //bit de paridade impar
-        //codigo
+            CamadaEnlaceDadosTransmissoraControledeErroBitParidadeImpar(quadro);
         break;
         case 2: //CRC
         //codigo
@@ -127,15 +201,39 @@ void CamadaEnlaceDadosTransmissoraControleDeErro (int quadro []) {
     }
 }
 
-void CamadaEnlaceDadosTransmissoraControleDeErroBitParidadePar(int quadro []) {
-    //implementacao do algoritmo
+void CamadaEnlaceDadosTransmissoraControleDeErroBitParidadePar(vector <int> &quadro) {
+    
+    int qtdd1 = 0;
+
+    for(int i=0;i<quadro.size()-1;i++){
+        if(quadro[i])
+            qtdd1++;
+    }
+
+    if(qtdd1%2 == 0 && quadro[quadro.size()-1] == 1)
+        cout << "\n\nERRO DE PARIDADE PAR\n\n";
+    else if(qtdd1%2 == 1 && quadro[quadro.size()-1] == 0)
+        cout << "\n\nERRO DE PARIDADE PAR\n\n";
+
+   
 }
 
-void CamadaEnlaceDadosTransmissoraControledeErroBitParidadeImpar(int quadro []) {
-    //implementação do algoritmo
+void CamadaEnlaceDadosTransmissoraControledeErroBitParidadeImpar(vector <int> &quadro) {
+    int qtdd1 = 0;
+
+    for(int i=0;i<quadro.size()-1;i++){
+        if(quadro[i])
+            qtdd1++;
+    }
+
+    if(qtdd1%2 == 0 && quadro[quadro.size()-1] == 0)
+        cout << "\n\nERRO DE PARIDADE IMPAR\n\n";
+    else if(qtdd1%2 == 1 && quadro[quadro.size()-1] == 1)
+        cout << "\n\nERRO DE PARIDADE IMPAR\n\n";
 }
 
 void CamadaEnlaceDadosTransmissoraControleDeErroCRC(int quadro []) {
     //implementação do algoritmo
     //usar polinomio CRC-32 (IEEE 802)
 }
+
