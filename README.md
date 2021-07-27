@@ -7,7 +7,7 @@ Lucas Gabriel de Araujo Silva NºUSP: 11218880
 Matheus Godoy Bolsarini NºUsp: 9896201
 
 # Link-Layer
-Simulação da camada de enlace feita usadno c++.Projeto feito para a turma de redes de computadores.
+Simulação da camada de enlace feita usando c++.Projeto feito para a turma de redes de computadores.
 
 ## Especificação
 Sistema Operacional: Linux Ubuntu 20.04
