@@ -10,25 +10,25 @@ Ou seja, simular o envio de uma mensagem de um computador A para um computador B
 using namespace std;
 #define POLYNOMESIZE 32
 
-void AplicacaoReceptora(string mensagem);
-void CamadaDeAplicacaoTransmissora(string mensagem);
 void AplicacaoTransmissora();
-void MeioDeComunicacao(vector<int> &fluxoBrutoDeBits);
-void CamadaEnlaceDadosTransmissoraControleDeErro(vector<int> &quadro);
+void CamadaDeAplicacaoTransmissora(string mensagem);
 void CamadaEnlaceDadosTransmissora(vector<int> &quadro);
+void CamadaEnlaceDadosTransmissoraControleDeErro(vector<int> &quadro);
+void MeioDeComunicacao(vector<int> &fluxoBrutoDeBits);
+void CamadaEnlaceDadosReceptora(vector<int> &quadro);
+void CamadaAplicacaoReceptora(vector<int> &quadro);
+void AplicacaoReceptora(string mensagem);
+void string_to_bin(string mensagem, vector<int> &quadro);
+char ByteToChar(string str);
+void convertBinToString(vector<int> &quadro, string &mensagem);
+void CamadaEnlaceDadosTransmissoraControleDeErroBitParidade(vector<int> &quadro, int paridade);
+vector<int> CamadaEnlaceDadosTransmissoraControleDeErroCRC(vector<int> quadro, int polinomio[]);
+vector<int> calculo_crc(vector<int> quadro, int polinomio[]);
+void CamadaEnlaceDadosReceptoraControleDeErro(vector<int> &quadro);
 void CamadaEnlaceDadosReceptoraControleDeErroBitParidadePar(vector<int> &quadro);
 void CamadaEnlaceDadosReceptoraControledeErroBitParidadeImpar(vector<int> &quadro);
 void CamadaEnlaceDadosReceptoraControleDeErroCRC(vector<int> quadro);
-void CamadaEnlaceDadosReceptora(vector<int> &quadro);
-void string_to_bin(string mensagem, vector<int> &quadro);
-void CamadaEnlaceDadosTransmissoraControleDeErroBitParidade(vector<int> &quadro, int paridade);
-vector<int> calculo_crc(vector<int> quadro, int polinomio[]);
-vector<int> CamadaEnlaceDadosTransmissoraControleDeErroCRC(vector<int> quadro, int polinomio[]);
-void CamadaEnlaceDadosReceptoraControleDeErro(vector<int> &quadro);
-void CamadaAplicacaoReceptora(vector<int> &quadro);
-void desencapsulamentoParidade(vector<int> &quadro, string &mensagem); 
-void converteMensagemCRC(vector<int> &quadro, string &mensagem);
-void convertBinToString(vector<int> &quadro, string &mensagem);
+
 
 /*
     Realiza a chamada da primeira camada, onde começa todo o processo
@@ -83,7 +83,7 @@ void CamadaEnlaceDadosTransmissora(vector<int> &quadro) {
     quadro: mensagem em bits
 */
 void CamadaEnlaceDadosTransmissoraControleDeErro(vector<int> &quadro){
-    int tipoDeControle = 1; //define qual algoritmo será usado
+    int tipoDeControle = 2; //define qual algoritmo será usado
     if(tipoDeControle == 0)
         cout << "\n-------------------METODO PARIDADE PAR--------------------------------\n";
     if(tipoDeControle == 1)
@@ -122,7 +122,7 @@ void MeioDeComunicacao(vector<int> &fluxoBrutoDeBits) {
     vector<int> fluxoBrutoDeBitsPontoB;
     int progresso = 0;
 
-    porcentagemDeErros = 20; // 10% 20%, 30%, 40%, ... 100%
+    porcentagemDeErros = 0; // 10% 20%, 30%, 40%, ... 100%
     
     for (int i = 0; i < fluxoBrutoDeBits.size(); i++) {
         fluxoBrutoDeBitsPontoA[i] = fluxoBrutoDeBits[i];
@@ -283,7 +283,7 @@ vector<int> calculo_crc(vector<int> quadro, int polinomio[]) {
     quadro: mensagem em bits
 */
 void CamadaEnlaceDadosReceptoraControleDeErro(vector<int> &quadro) {
-    int tipoDeControle = 1;//escolhe algoritmo de verificao de erro  
+    int tipoDeControle = 2;//escolhe algoritmo de verificao de erro  
     switch (tipoDeControle){                                                                              
     case 0: //bit de paridade par
         CamadaEnlaceDadosReceptoraControleDeErroBitParidadePar(quadro);
