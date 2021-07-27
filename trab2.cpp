@@ -9,6 +9,8 @@ Ou seja, simular o envio de uma mensagem de um computador A para um computador B
 
 using namespace std;
 #define POLYNOMESIZE 32
+float porcentagemDeErros;//define a porcentagem de erro
+int tipoDeControle;//escolhe algoritmo de verificao de erro 
 
 void AplicacaoTransmissora();
 void CamadaDeAplicacaoTransmissora(string mensagem);
@@ -35,6 +37,13 @@ void CamadaEnlaceDadosReceptoraControleDeErroCRC(vector<int> quadro);
 */
 int main() {
     cout << "-------------------Camada de enlace simulacao---------------------\n";
+    cout << "Digite a porcentagem de erro desejada para a simulacao: ";
+    cin >> porcentagemDeErros;
+    cout << "Escolhe o algoritmo desejado para o controle de erro:\n ";
+    cout << "0-Paridade par \n 1-Paridade Impar \n 2-CRC \n ";
+    cin >> tipoDeControle;
+    
+    getchar();
     AplicacaoTransmissora();
 }
 
@@ -83,7 +92,7 @@ void CamadaEnlaceDadosTransmissora(vector<int> &quadro) {
     quadro: mensagem em bits
 */
 void CamadaEnlaceDadosTransmissoraControleDeErro(vector<int> &quadro){
-    int tipoDeControle = 2; //define qual algoritmo será usado
+  
     if(tipoDeControle == 0)
         cout << "\n-------------------METODO PARIDADE PAR--------------------------------\n";
     if(tipoDeControle == 1)
@@ -111,18 +120,15 @@ void CamadaEnlaceDadosTransmissoraControleDeErro(vector<int> &quadro){
 /*
     Simula o Meio de comunicacao fisico, em que erros podem acontecer
     durante a transmissao de uma mensagem, a porcetagem de erros que se deseja que
-    aconteca e selecionada na variavel porcentagem
+    aconteca é selecionada na variavel porcentagem no inicio do programa
     fluxoBrutoDeBits: mensagem a ser transmitida 
 */
 void MeioDeComunicacao(vector<int> &fluxoBrutoDeBits) {
-    float porcentagemDeErros;
     int BitsSize = fluxoBrutoDeBits.size();
     int fluxoBrutoDeBitsPontoA[BitsSize];
     vector<int> fluxoBrutoDeBitsPontoB;
     int progresso = 0;
 
-    porcentagemDeErros = 0; // 10% 20%, 30%, 40%, ... 100%
-    
     for (int i = 0; i < fluxoBrutoDeBits.size(); i++) {
         fluxoBrutoDeBitsPontoA[i] = fluxoBrutoDeBits[i];
     }
@@ -282,7 +288,7 @@ vector<int> calculo_crc(vector<int> quadro, int polinomio[]) {
     quadro: mensagem em bits
 */
 void CamadaEnlaceDadosReceptoraControleDeErro(vector<int> &quadro) {
-    int tipoDeControle = 2;//escolhe algoritmo de verificao de erro  
+   
     switch (tipoDeControle){                                                                              
     case 0: //bit de paridade par
         CamadaEnlaceDadosReceptoraControleDeErroBitParidadePar(quadro);
