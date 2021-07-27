@@ -10,7 +10,7 @@ Ou seja, simular o envio de uma mensagem de um computador A para um computador B
 using namespace std;
 #define POLYNOMESIZE 32
 float porcentagemDeErros;//define a porcentagem de erro
-int tipoDeControle;//escolhe algoritmo de verificao de erro 
+int tipoDeControle;//escolhe algoritmo de verificacao de erro 
 
 void AplicacaoTransmissora();
 void CamadaDeAplicacaoTransmissora(string mensagem);
