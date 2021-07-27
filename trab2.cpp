@@ -115,14 +115,13 @@ void CamadaEnlaceDadosTransmissoraControleDeErro(vector<int> &quadro){
     fluxoBrutoDeBits: mensagem a ser transmitida 
 */
 void MeioDeComunicacao(vector<int> &fluxoBrutoDeBits) {
-    int erro;
     float porcentagemDeErros;
     int BitsSize = fluxoBrutoDeBits.size();
     int fluxoBrutoDeBitsPontoA[BitsSize];
     vector<int> fluxoBrutoDeBitsPontoB;
     int progresso = 0;
 
-    porcentagemDeErros = 0; // 10% 20%, 30%, 40%, ... 100%
+    porcentagemDeErros = 20; // 10% 20%, 30%, 40%, ... 100%
     
     for (int i = 0; i < fluxoBrutoDeBits.size(); i++) {
         fluxoBrutoDeBitsPontoA[i] = fluxoBrutoDeBits[i];
@@ -333,9 +332,9 @@ void CamadaEnlaceDadosReceptoraControledeErroBitParidadeImpar(vector<int> &quadr
             qtdd1++;
 
     if (qtdd1 % 2 == 0 && quadro[quadro.size() - 1] == 0)
-        cout << "\n!!!!!!!!!!!!!!!!!!ERRO DE PARIDADE IMPAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+        cout << "\n!!!!!!!!!!!!!!!!!!ERRO DE PARIDADE IMPAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";
     else if (qtdd1 % 2 == 1 && quadro[quadro.size() - 1] == 1)
-        cout << "\n!!!!!!!!!!!!!!!!!!ERRO DE PARIDADE IMPAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+        cout << "\n!!!!!!!!!!!!!!!!!!ERRO DE PARIDADE IMPAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";
 }
 
 /*
@@ -350,7 +349,7 @@ void CamadaEnlaceDadosReceptoraControleDeErroCRC(vector<int> quadro) {
     //Se a funcao do polinomio nao for 0 apos o calculo CRC e porque possui erro
     for (int i = 0; i < POLYNOMESIZE; i++) 
         if(resto[i]) {
-            cout << "\n!!!!!!!!!!!!!!!!!!ERRO DE CRC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+            cout << "\n!!!!!!!!!!!!!!!!!!ERRO DE CRC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";
             break;
         }
 }
